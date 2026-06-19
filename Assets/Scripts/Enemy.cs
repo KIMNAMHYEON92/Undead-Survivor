@@ -24,6 +24,13 @@ public class Enemy : MonoBehaviour
         spriter = GetComponent<SpriteRenderer>();
     }
 
+    // OnEnable: 객체가 활성화 될 때마다 호출
+    private void OnEnable()
+    {
+        // 프리팹은 Player를 참조(할당) 하지 못하므로, GameManager를 통해 매번 플레이어를 target으로 할당한다.
+        target= GameManager.instance.player.GetComponent<Rigidbody2D>();
+    }
+
     private void FixedUpdate()
     {
         // 1. 방향 구하기 (목표위치 - 내 위치) -> 플레이어쪽을 바라보는 벡터
