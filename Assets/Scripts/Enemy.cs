@@ -46,5 +46,10 @@ public class Enemy : MonoBehaviour
         // 4. 잔여 속도 제거 - 플레이어랑 충돌하면, 물리 속도를 0으로
         rigid.linearVelocity = Vector2.zero;
     }
+
+    void LateUpdate()
+    {
+        spriter.flipX= target.position.x < rigid.position.x;
+    }
     
 }
