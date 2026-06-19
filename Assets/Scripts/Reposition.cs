@@ -1,8 +1,17 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Reposition : MonoBehaviour
 {
+    // 적 생존 여부 판단용 (죽은 적은 콜리전을 끄기 위함)
+    private Collider2D coll;
+    
+    private void Awake()
+    {
+        coll = GetComponent<Collider2D>();
+    }
+    
     // OnTriggerExit2D : 트리거 콜라이더에서 벗어났을때 호출되는 함수
     private void OnTriggerExit2D(Collider2D collision)
     {
@@ -40,6 +49,13 @@ public class Reposition : MonoBehaviour
                 }
                 break;
             case "Enemy":
+                // 살아있는 적만 재배치
+                if (coll.enabled)
+                {
+                    // 플레이어 진행 방향 맨 한칸 만큼(20) 랜덤 재배치
+                    Vector3 ranVec = new Vector3(Random.Range(-3f,3f), Random.Range(-3f,3f), 0);
+                    transform.Translate(playerDir*20 + ranVec);
+                }
                 break;
             default:
                 break;
