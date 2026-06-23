@@ -66,6 +66,34 @@ public class Enemy : MonoBehaviour
         spriter.flipX= target.position.x < rigid.position.x;
     }
 
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        // 공격에 당한 경우만 처리하기 위한 필터
+        if (!collision.CompareTag("Bullet"))
+        {
+            return;
+        }
+        
+        // 충돌된 Bullet 컴포넌트의 데미지 만큼 체력 감소
+        health -= collision.GetComponent<Bullet>().damage;
+
+        if (health > 0)
+        {
+            // 피격 반응 추가
+        }
+        else
+        {
+            Dead();
+        }
+        
+    }
+
+    // 적 사망처리는 객체 Destroy가 아니라 오브젝트 풀에서 재사용하기 위해 비활성화
+    public void Dead()
+    {
+        gameObject.SetActive(false);
+    }
+    
     // 난이도 데이터를 파라미터로 전달받아 적 객체 초기화
     public void Init(SpawnData data)
     {
@@ -74,5 +102,7 @@ public class Enemy : MonoBehaviour
         maxHealth= data.health;
         health= data.health;
     }
+    
+    
     
 }
