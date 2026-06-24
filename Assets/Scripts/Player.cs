@@ -9,6 +9,8 @@ public class Player : MonoBehaviour
     
     // 이동 속도
     public float speed;
+    // 가장 가까운 적을 찾는 스캐너
+    public Scanner scanner;
 
     // 객체가 가진 물리 컴포넌트
     Rigidbody2D rigid;
@@ -22,6 +24,7 @@ public class Player : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
         spriter = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        scanner = GetComponent<Scanner>();
     }
     
     // FixedUpdate
