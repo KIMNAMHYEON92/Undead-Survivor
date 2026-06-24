@@ -89,7 +89,7 @@ public class Weapon : MonoBehaviour
             // 회전된 위 방향으로 1.5 바깥으로 위치
             bullet.Translate(bullet.up * 1.5f, Space.World);
             
-            bullet.GetComponent<Bullet>().Init(damage,-1);
+            bullet.GetComponent<Bullet>().Init(damage,-1, Vector3.zero);
         }
     }
 

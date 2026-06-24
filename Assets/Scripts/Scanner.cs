@@ -36,4 +36,11 @@ public class Scanner : MonoBehaviour
         
         return result;
     }
+
+    // 씬 뷰에 스캔 범위 원을 그려주기 위함
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, scanRange);
+    }
 }
