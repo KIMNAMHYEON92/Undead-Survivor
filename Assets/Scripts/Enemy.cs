@@ -86,7 +86,7 @@ public class Enemy : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collision)
     {
         // 공격에 당한 경우만 처리하기 위한 필터
-        if (!collision.CompareTag("Bullet"))
+        if (!collision.CompareTag("Bullet") || !isLive) // 시체 경험치 획득 방지 추가
         {
             return;
         }
@@ -108,6 +108,8 @@ public class Enemy : MonoBehaviour
             rigid.simulated = false; // 물리 상호작용 (밀림/움직임) 정지
             spriter.sortingOrder = 2; // 정렬을 내림
             anim.SetBool("Dead",true); // 사망 애니메이션 재생을 위한 파라미터 전달
+            GameManager.instance.kill++;
+            GameManager.instance.GetExp();
         }
         
     }
