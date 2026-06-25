@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -26,12 +27,16 @@ public class Enemy : MonoBehaviour
     // flipX를 통한 적 좌우 반전용
     SpriteRenderer spriter;
     
+    // 코루틴에서 쓸 "1 물리 프레임 대기"
+    private WaitForFixedUpdate wait;
+    
     void Awake()
     {
         // 미리 컴포넌트들을 로드하여 메모리에 캐싱
         rigid = GetComponent<Rigidbody2D>();
         spriter = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        wait = new WaitForFixedUpdate();
     }
 
     // OnEnable: 객체가 활성화 될 때마다 호출
@@ -47,6 +52,12 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // 죽은 상태(!isLive)와 히트 상태(넉백 중)에는 아래 추적 이동을 멈춤
+        if (!isLive || anim.GetCurrentAnimatorStateInfo(0).IsName("Hit"))
+        {
+            return;
+        }
+        
         // 1. 방향 구하기 (목표위치 - 내 위치) -> 플레이어쪽을 바라보는 벡터
         Vector2 dirVec = target.position - rigid.position;
         
@@ -80,6 +91,8 @@ public class Enemy : MonoBehaviour
         if (health > 0)
         {
             // 피격 반응 추가
+            anim.SetTrigger("Hit"); // Animator의 Hit 발동 -> Hit 애니메이션 클립 재생
+            StartCoroutine(Knockback());
         }
         else
         {
@@ -103,6 +116,16 @@ public class Enemy : MonoBehaviour
         health= data.health;
     }
     
-    
+    // Knockback : 맞는 순간 물리적으로 밀려나는 코루틴
+    IEnumerator Knockback()
+    {
+        yield return wait; // 다음 물리 프레임까지 1프레임을 대기
+        
+        // 플레이어 반대방향으로 = 나(Enemy) 위치 - 플레이어 위치
+        Vector3 playerPos = GameManager.instance.player.transform.position;
+        Vector3 dirVec = transform.position - playerPos;
+        // 그 방향으로 순간 물리 충격(Impulse)
+        rigid.AddForce(dirVec.normalized * 3, ForceMode2D.Impulse);
+    }
     
 }
