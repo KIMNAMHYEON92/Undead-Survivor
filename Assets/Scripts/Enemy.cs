@@ -48,7 +48,7 @@ public class Enemy : MonoBehaviour
         // 사망에서 바뀌었던 상태들 모두 원복(재사용 위해서)
         coll.enabled = true;
         rigid.simulated = true;
-        spriter.sortingOrder = 2;
+        spriter.sortingOrder = 3;
         anim.SetBool("Dead",false);
     }
 
@@ -76,6 +76,10 @@ public class Enemy : MonoBehaviour
 
     void LateUpdate()
     {
+        if (!isLive)
+        {
+            return;
+        }
         spriter.flipX= target.position.x < rigid.position.x;
     }
 
@@ -102,7 +106,7 @@ public class Enemy : MonoBehaviour
             isLive= false; // 시체의 이동, 반응 정지 (FixedUpdate 필터용)
             coll.enabled = false; // 시체의 충돌 제거
             rigid.simulated = false; // 물리 상호작용 (밀림/움직임) 정지
-            spriter.sortingOrder = 1; // 정렬을 내림
+            spriter.sortingOrder = 2; // 정렬을 내림
             anim.SetBool("Dead",true); // 사망 애니메이션 재생을 위한 파라미터 전달
         }
         
