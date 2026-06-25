@@ -8,25 +8,21 @@ public class Enemy : MonoBehaviour
     // 현재 체력, 최대 체력
     public float health;
     public float maxHealth;
-    
-    // 몬스터 종류별 애니메이션 컨트롤러 배열 (Init 함수에서 spriteType으로 갈아끼움)
-    public RuntimeAnimatorController[] animCon;
-    
-    // 애니메이터 - 몬스터 종류 전환
-    Animator anim;
-    
-    // 추적할 대상 물리 컴포넌트 target
-    public Rigidbody2D target;
-    
     // 적의 생존 여부
     public bool isLive;
     
+    // 몬스터 종류별 애니메이션 컨트롤러 배열 (Init 함수에서 spriteType으로 갈아끼움)
+    public RuntimeAnimatorController[] animCon;
+    // 애니메이터 - 몬스터 종류 전환
+    Animator anim;
+    // 추적할 대상 물리 컴포넌트 target
+    public Rigidbody2D target;
+    // 사망 시 충돌 비활성화를 위해 추가한, 충돌 콜라이더 컴포넌트
+    public Collider2D coll;
     // Enemy 본인 물리 컴포넌트
     Rigidbody2D rigid;
-    
     // flipX를 통한 적 좌우 반전용
     SpriteRenderer spriter;
-    
     // 코루틴에서 쓸 "1 물리 프레임 대기"
     private WaitForFixedUpdate wait;
     
@@ -34,6 +30,7 @@ public class Enemy : MonoBehaviour
     {
         // 미리 컴포넌트들을 로드하여 메모리에 캐싱
         rigid = GetComponent<Rigidbody2D>();
+        coll = GetComponent<Collider2D>();
         spriter = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         wait = new WaitForFixedUpdate();
@@ -48,6 +45,11 @@ public class Enemy : MonoBehaviour
         // 풀에서 다시 사용될때(죽음->재스폰) 상태 원상 복구
         isLive= true;
         health= maxHealth;
+        // 사망에서 바뀌었던 상태들 모두 원복(재사용 위해서)
+        coll.enabled = true;
+        rigid.simulated = true;
+        spriter.sortingOrder = 2;
+        anim.SetBool("Dead",false);
     }
 
     private void FixedUpdate()
@@ -96,7 +98,12 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            Dead();
+            // Dead();
+            isLive= false; // 시체의 이동, 반응 정지 (FixedUpdate 필터용)
+            coll.enabled = false; // 시체의 충돌 제거
+            rigid.simulated = false; // 물리 상호작용 (밀림/움직임) 정지
+            spriter.sortingOrder = 1; // 정렬을 내림
+            anim.SetBool("Dead",true); // 사망 애니메이션 재생을 위한 파라미터 전달
         }
         
     }
