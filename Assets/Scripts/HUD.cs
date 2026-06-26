@@ -15,7 +15,7 @@ public class HUD : MonoBehaviour
         mySlider = GetComponent<Slider>();
     }
 
-    void lassUpdate()
+    void LateUpdate()
     {
         switch (type)
         {
