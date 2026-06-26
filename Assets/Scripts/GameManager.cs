@@ -21,10 +21,17 @@ public class GameManager : MonoBehaviour
     public int kill;
     public int exp;
     public int[] nextExp = { 3, 5, 10, 20, 150, 210, 280, 360, 450, 600 };
+    public int health;
+    public int maxHealth = 100;
 
     private void Awake()
     {
         instance = this; 
+    }
+    
+    private void Start()
+    {
+        health = maxHealth; // 게임 시작 시 체력을 최대체력으로 초기화
     }
 
     void Update()
