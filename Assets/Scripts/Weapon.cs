@@ -19,13 +19,6 @@ public class Weapon : MonoBehaviour
         // 부모 객체 가져오기 - Player의 자식에 접근을 위해
         player = GetComponentInParent<Player>();
     }
-    
-    // 메모리에 올라갈 때 처음 1회 자동 호출
-    void Start()
-    {
-        // 무기 인스턴스가 만들어지면 초기화
-        Init();
-    }
 
     // Update() : 매 프레임당 호출. 입력/회전 등 일반 로직.
     // FixedUpdate() : 물리 갱신 프레임 당 호출 - Rigidbody 물리 이동 전용.
@@ -50,8 +43,29 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    public void Init()
+    public void Init(ItemData data)
     {
+        // 기본 정보 세팅
+        name = "Weapon " + data.itemId;
+        transform.parent= player.transform; // 플레이어 자식으로 등록(따라다니게)
+        transform.localPosition = Vector3.zero; // 플레이어 기준 원점 배치
+        
+        // 능력치 세팅
+        id = data.itemId;
+        damage = data.baseDamage;
+        count = data.baseCount;
+        
+        // 투사체 프리팹 설정
+        // 데이터 안의 투사체 프리팹이 풀의 몇번째 인덱스인지 지정
+        for (int index = 0; index < GameManager.instance.pool.prefabs.Length; index++)
+        {
+            if (data.projectile == GameManager.instance.pool.prefabs[index])
+            {
+                prefabId = index;
+                break;
+            }
+        }
+        
         // 무기 종류별 초기 세팅
         switch (id)
         {
@@ -112,6 +126,18 @@ public class Weapon : MonoBehaviour
         
         // Init 값 주입
         bullet.GetComponent<Bullet>().Init(damage,count,dir);
+    }
+
+    public void LevelUp(float nextDamage, int nextCount)
+    {
+        this.damage = nextDamage;
+        this.count = nextCount;
+        
+        // 근접 무기는 칼날 개수 재배치
+        if (id == 0)
+        {
+            Arrange();
+        }
     }
     
 }
